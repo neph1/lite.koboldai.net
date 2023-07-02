@@ -2788,6 +2788,7 @@ Current version: 45
 		typ_s: 1,
 		tfs_s: 1,
 		sampler_order: [6, 0, 1, 2, 3, 4, 5],
+        sampler_seed: -1,
 	};
 
 	var defaultsettings = JSON.parse(JSON.stringify(localsettings));
@@ -5136,6 +5137,7 @@ Current version: 45
 		document.getElementById("instruct_has_markdown").checked = localsettings.instruct_has_markdown;
 		document.getElementById("auto_ctxlen").checked = localsettings.auto_ctxlen;
 		document.getElementById("auto_genamt").checked = localsettings.auto_genamt;
+        document.getElementById("sampler_seed").value = localsettings.sampler_seed;
 		pendingstyle = localsettings.image_styles;
 
 		//prepare the input for sampler order
@@ -5319,6 +5321,8 @@ Current version: 45
 		localsettings.img_autogen = (document.getElementById("img_autogen").checked ? true : false);
 		localsettings.save_images = (document.getElementById("save_images").checked ? true : false);
 		localsettings.img_allownsfw = (document.getElementById("img_allownsfw").checked ? true : false);
+        localsettings.sampler_seed = document.getElementById("sampler_seed").value;
+
 		if (localsettings.generate_images) {
 			document.getElementById("btn_genimg").classList.remove("hidden");
 			document.getElementById("btn_genimg2").classList.remove("hidden");
@@ -5353,6 +5357,7 @@ Current version: 45
 		localsettings.top_a = cleannum(localsettings.top_a, 0, 1);
 		localsettings.typ_s = cleannum(localsettings.typ_s, 0, 1);
 		localsettings.tfs_s = cleannum(localsettings.tfs_s, 0, 1);
+        localsettings.sampler_seed = cleannum(localsettings.sampler_seed, -1, 2147483647);
 		toggle_invert_colors();
 
 		autosave(); //need to always autosave, so that we can switch back to non persistent sessions
@@ -5450,7 +5455,8 @@ Current version: 45
 				"tfs": localsettings.tfs_s,
 				"rep_pen_range": localsettings.rep_pen_range,
 				"rep_pen_slope": localsettings.rep_pen_slope,
-				"sampler_order": localsettings.sampler_order
+				"sampler_order": localsettings.sampler_order,
+                "sampler_seed": localsettings.sampler_seed
 			},
 			"models": selected_models.map((m) => { return m.name }),
 		};
@@ -6046,7 +6052,8 @@ Current version: 45
 					"tfs": localsettings.tfs_s,
 					"rep_pen_range": localsettings.rep_pen_range,
 					"rep_pen_slope": localsettings.rep_pen_slope,
-					"sampler_order": localsettings.sampler_order
+					"sampler_order": localsettings.sampler_order,
+                    "sampler_seed": localsettings.sampler_seed
 				},
 				"models": selected_models.map((m) => { return m.name }),
 			};
@@ -6568,7 +6575,8 @@ Current version: 45
 		}
 
 		//always trim incomplete sentences for adventure and chat
-		if (localsettings.opmode == 2 || localsettings.opmode == 3 || localsettings.trimsentences == true) {
+        //localsettings.opmode == 2 || localsettings.opmode == 3 || 
+		if (localsettings.trimsentences == true) {
 			gentxt = end_trim_to_sentence(gentxt,true);
 		}
 
@@ -8438,6 +8446,13 @@ Current version: 45
 								id="rep_pen_slope" title="Repetition Penalty Slope"></td>
 								<td><input class="" type="text" placeholder="CSV" value="" id="sampler_order" style="width:80px;" title="Valid values are: 0=top_k, 1=top_a, 2=top_p, 3=tfs, 4=typ, 5=temp, 6=rep_pen" onblur="validate_samplers()"></td>
 								</tr>
+                                <tr>
+								  <th title="Sampler Seed">Seed.</th>
+                                </tr>
+								<tr>
+                                   <td><input class="" type="text" placeholder="-1" value="-1" length="10"
+								   id="sampler_seed" title="Sampler Seed"></td>
+                                </tr>
 							  </table>
 						</div>
 
